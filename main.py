@@ -1,7 +1,13 @@
 import json
 import requests
+import os
 from geopy import distance
 from pprint import pprint
+from dotenv import load_dotenv
+
+
+load_dotenv()
+apikey=os.getenv('API_KEY')
 
 
 def fetch_coordinates(apikey, address):
@@ -22,33 +28,39 @@ def fetch_coordinates(apikey, address):
     return lon, lat
 
 
-apikey = 
-point = input("Ваше местоположение?")
-coords = fetch_coordinates(apikey, point)
-
-
-def my_distance():
+def my_distance(coords):
+    coffee_shops = []
     with open("coffee.json", "r", encoding="CP1251") as my_file:
         file_contents = my_file.read()
     contents_list = json.loads(file_contents)
     for data in contents_list:
-        distance_my = (distance.distance(coords, (data['Longitude_WGS84'], data['Longitude_WGS84'])).km)
-        coffee_list = {
+        data_coffees = distance.distance(coords, (data['Longitude_WGS84'], data['Longitude_WGS84'])).km
+        coffee_shop = {
         "title": data['Name'],
-        "distance": distance_my,
+        "distance": data_coffees,
         "longitude": data['Longitude_WGS84'],
         "latitude": data['Latitude_WGS84']
         }
-        pprint(coffee_list, sort_dicts=False)
+        coffee_shops.append(coffee_shop)
+    return coffee_shops
 
-def min_distance():
-    coordinate = my_distance()
-    return coordinate['distance']
+
+def min_distance(coords):
+    coffee_shops = []
+    coordinate = my_distance(coords)
+    for shop in coordinate:
+        coffee_shops.append(shop['distance'])
+    min_distance = min(coffee_shops)
+    closest_coffee_shop = [shop for shop in coordinate if shop['distance'] == min_distance][0]
+    return closest_coffee_shop
 
 
 def main():
+    point = input("Ваше местоположение?")  # Prompt user for location
+    coords = fetch_coordinates(apikey, point)  # Get coordinates from Yandex API
     print("Ваши координаты:", coords)
-    print(min_distance())
+    closest_shop = min_distance(coords)
+    pprint(closest_shop, sort_dicts=False)
 
 
 if __name__ == '__main__':
