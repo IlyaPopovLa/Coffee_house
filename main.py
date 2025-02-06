@@ -22,7 +22,7 @@ def fetch_coordinates(apikey, address):
     return lon, lat
 
 
-apikey = '3f79fc19-4823-4792-8236-90d0071cf112'
+apikey = 
 point = input("Ваше местоположение?")
 coords = fetch_coordinates(apikey, point)
 
