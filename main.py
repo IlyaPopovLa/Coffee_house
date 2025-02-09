@@ -56,11 +56,11 @@ def min_distance(coords):
 
 
 def main():
-    point = input("Ваше местоположение?")  # Prompt user for location
-    coords = fetch_coordinates(apikey, point)  # Get coordinates from Yandex API
+    point = input("Ваше местоположение?")
+    coords = fetch_coordinates(apikey, point)
     print("Ваши координаты:", coords)
     closest_shop = min_distance(coords)
-    pprint(closest_shop, sort_dicts=False)
+    pprint(closest_shop)
 
 
 if __name__ == '__main__':
