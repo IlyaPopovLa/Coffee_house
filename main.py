@@ -60,12 +60,12 @@ def first_coffee_shops(coords):
 
 
 def save_map(coords):
-    coffee_shops = my_distance(coords)
+    coffee_shops = first_coffee_shops(coords)
     my_map = folium.Map(
         location = coords,
         zoom_start = 12,
     )
-    for shop in coffee_shops[:5]:
+    for shop in coffee_shops:
         folium.Marker(
             location = coords,
             popup = "Вы тут",
