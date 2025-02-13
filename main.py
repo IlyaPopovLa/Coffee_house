@@ -1,6 +1,7 @@
 import json
 import requests
 import os
+import folium
 from geopy import distance
 from pprint import pprint
 from dotenv import load_dotenv
@@ -47,8 +48,8 @@ def min_distance(coords):
     coordinate = my_distance(coords)
     for shop in coordinate:
         coffee_shops.append(shop['distance'])
-    distance = min(coffee_shops)
-    closest_coffee_shop = [shop for shop in coordinate if shop['distance'] == distance]
+    distance_coffee_shops = min(coffee_shops)
+    closest_coffee_shop = [shop for shop in coordinate if shop['distance'] == distance_coffee_shops]
     return closest_coffee_shop
 
 
@@ -56,6 +57,27 @@ def first_coffee_shops(coords):
     coffee_shops = my_distance(coords)
     sorted_shops = sorted(coffee_shops, key=lambda shop: shop['distance'])
     return sorted_shops[:5]
+
+
+def save_map(coords):
+    coffee_shops = my_distance(coords)
+    my_map = folium.Map(
+        location = coords,
+        zoom_start = 12,
+    )
+    for shop in coffee_shops[:5]:
+        folium.Marker(
+            location = coords,
+            popup = "Вы тут",
+            icon = folium.Icon(color="red")
+        ).add_to(my_map)
+
+        folium.Marker(
+            location = [shop['latitude'], shop['longitude']],
+            popup = shop['title'],
+            icon = folium.Icon(color="green")
+        ).add_to(my_map)
+    my_map.save("map.html")
 
 
 def main():
@@ -66,6 +88,7 @@ def main():
     print("Ваши координаты:", coords)
     closest_shop = first_coffee_shops(coords)
     pprint(closest_shop)
+    save_map(coords)
 
 
 if __name__ == '__main__':
