@@ -6,10 +6,6 @@ from pprint import pprint
 from dotenv import load_dotenv
 
 
-load_dotenv()
-apikey=os.getenv('API_KEY')
-
-
 def fetch_coordinates(apikey, address):
     base_url = "https://geocode-maps.yandex.ru/1.x"
     response = requests.get(base_url, params={
@@ -25,7 +21,7 @@ def fetch_coordinates(apikey, address):
 
     most_relevant = found_places[0]
     lon, lat = most_relevant['GeoObject']['Point']['pos'].split(" ")
-    return lon, lat
+    return lat, lon
 
 
 def my_distance(coords):
@@ -34,10 +30,11 @@ def my_distance(coords):
         file_contents = my_file.read()
     contents_list = json.loads(file_contents)
     for data in contents_list:
-        data_coffees = distance.distance(coords, (data['Longitude_WGS84'], data['Longitude_WGS84'])).km
+        shop_coords = (data['Latitude_WGS84'], data['Longitude_WGS84'])
+        distance_to_shop = distance.distance(coords, shop_coords).km
         coffee_shop = {
         "title": data['Name'],
-        "distance": data_coffees,
+        "distance": distance_to_shop,
         "longitude": data['Longitude_WGS84'],
         "latitude": data['Latitude_WGS84']
         }
@@ -50,16 +47,24 @@ def min_distance(coords):
     coordinate = my_distance(coords)
     for shop in coordinate:
         coffee_shops.append(shop['distance'])
-    min_distance = min(coffee_shops)
-    closest_coffee_shop = [shop for shop in coordinate if shop['distance'] == min_distance][0]
+    distance = min(coffee_shops)
+    closest_coffee_shop = [shop for shop in coordinate if shop['distance'] == distance]
     return closest_coffee_shop
 
 
+def first_coffee_shops(coords):
+    coffee_shops = my_distance(coords)
+    sorted_shops = sorted(coffee_shops, key=lambda shop: shop['distance'])
+    return sorted_shops[:5]
+
+
 def main():
+    load_dotenv()
+    apikey = os.getenv('API_KEY')
     point = input("Ваше местоположение?")
     coords = fetch_coordinates(apikey, point)
     print("Ваши координаты:", coords)
-    closest_shop = min_distance(coords)
+    closest_shop = first_coffee_shops(coords)
     pprint(closest_shop)
 
 
