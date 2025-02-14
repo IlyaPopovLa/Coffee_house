@@ -85,9 +85,6 @@ def main():
     apikey = os.getenv('API_KEY')
     point = input("Ваше местоположение?")
     coords = fetch_coordinates(apikey, point)
-    print("Ваши координаты:", coords)
-    closest_shop = first_coffee_shops(coords)
-    pprint(closest_shop)
     save_map(coords)
 
 
