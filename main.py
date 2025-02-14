@@ -3,7 +3,6 @@ import requests
 import os
 import folium
 from geopy import distance
-from pprint import pprint
 from dotenv import load_dotenv
 
 
